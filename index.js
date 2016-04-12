@@ -1,9 +1,20 @@
 'use strict';
-const modelInit = require('./lib/initModels');
+const initModels = require('./lib/initModels'),
+  initHistory = require('./lib/accountHistory'),
+  checkPolicy = require('./lib/checkPolicy');
+
 /**
  * Created by Adrian on 08-Apr-16.
  * IMPORTANT for setting up the plugin:
  * add --setup=plugin.auth-password
+ *
+ * The plugin will:
+ *  1. Register the "auth.password.login" authorization in the dispatcher,
+ *    so it can be used in other places. This authorization middleware will
+ *    place the opt.modelName (eg: account) in the intent, using the .data(modelName, accObj)
+ *    and call the next function that is in line.
+ *  2. Register the "auth.password.change" authorization in the dispatcher,
+ *    so it can be used to enable password changing.
  */
 const IDENTITY_TYPES = ['id', 'username', 'email'];
 module.exports = function(thorin, opt, pluginName) {
@@ -46,13 +57,30 @@ module.exports = function(thorin, opt, pluginName) {
   let loader;
   // Step one: initiate the model.
   thorin.on(thorin.EVENT.INIT, 'store.' + opt.store, (storeObj) => {
-    loader = modelInit(thorin, storeObj, opt);
+    let historyObj = null;
+    if(opt.history) {
+      historyObj = initHistory(thorin, storeObj, opt);
+      // export the history functionality
+      pluginObj.history = historyObj;
+    }
+    loader = initModels(thorin, storeObj, opt);
     loader.init();
+    // Load all authorizations and middleware.
+    thorin.loadPath(__dirname + '/lib/authorization', thorin, storeObj, opt, historyObj);
+    thorin.loadPath(__dirname + '/lib/middleware', thorin, storeObj, opt, historyObj);
   });
-  return {
+  const pluginObj = {
+    history: null,
     setup: (done) => {
       loader.setup();
       done();
     }
-  }
+  };
+
+  /* This will apply the password validation policy and return an error if not met. */
+  pluginObj.checkPolicy = function CheckPasswordPolicy(password) {
+    return checkPolicy(thorin, opt, password);
+  };
+
+  return pluginObj;
 };
