@@ -1,6 +1,5 @@
 'use strict';
 const initModels = require('./lib/initModels'),
-  initHistory = require('./lib/accountHistory'),
   checkPolicy = require('./lib/checkPolicy');
 
 /**
@@ -40,37 +39,18 @@ module.exports = function(thorin, opt, pluginName) {
     loginAt: {              // Set to false if you do not want a login_at field.
       field: "login_at",
       options: {}               // should we add a last login field.
-    },
-    history: {                  // Do we want to hold a login history for each user? set to false to disable.
-      modelName: null,          // the modelName
-      tableName: null         // the actual table_name
     }
   }, opt);
-  if(opt.history) {
-    if(!opt.history.tableName) {
-      opt.history.tableName = opt.modelName + '_history';
-    }
-    if(!opt.history.modelName) {
-      opt.history.modelName = opt.modelName + 'History';
-    }
-  }
   let loader;
   // Step one: initiate the model.
   thorin.on(thorin.EVENT.INIT, 'store.' + opt.store, (storeObj) => {
-    let historyObj = null;
-    if(opt.history) {
-      historyObj = initHistory(thorin, storeObj, opt);
-      // export the history functionality
-      pluginObj.history = historyObj;
-    }
     loader = initModels(thorin, storeObj, opt);
     loader.init();
     // Load all authorizations and middleware.
-    thorin.loadPath(__dirname + '/lib/authorization', thorin, storeObj, opt, historyObj);
-    thorin.loadPath(__dirname + '/lib/middleware', thorin, storeObj, opt, historyObj);
+    thorin.loadPath(__dirname + '/lib/authorization', thorin, storeObj, opt);
+    thorin.loadPath(__dirname + '/lib/middleware', thorin, storeObj, opt);
   });
   const pluginObj = {
-    history: null,
     setup: (done) => {
       loader.setup();
       done();
@@ -81,6 +61,8 @@ module.exports = function(thorin, opt, pluginName) {
   pluginObj.checkPolicy = function CheckPasswordPolicy(password) {
     return checkPolicy(thorin, opt, password);
   };
+
+  pluginObj.options = opt;
 
   return pluginObj;
 };
