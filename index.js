@@ -1,6 +1,7 @@
 'use strict';
 const initModels = require('./lib/initModels'),
-  checkPolicy = require('./lib/checkPolicy');
+  checkPolicy = require('./lib/checkPolicy'),
+  hasher = require('./lib/hasher');
 
 /**
  * Created by Adrian on 08-Apr-16.
@@ -61,6 +62,11 @@ module.exports = function(thorin, opt, pluginName) {
   pluginObj.checkPolicy = function CheckPasswordPolicy(password) {
     return checkPolicy(thorin, opt, password);
   };
+
+  /* Expose our hashPassword() function */
+  pluginObj.hashPassword = hasher.hash;
+  /* Expose our comparePassword() function */
+  pluginObj.comparePassword = hasher.compare;
 
   pluginObj.options = opt;
 
