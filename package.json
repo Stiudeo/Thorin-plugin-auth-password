@@ -1,7 +1,7 @@
 {
   "name": "thorin-plugin-auth-password",
   "author": "Stiudeo",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "dependencies": {
     "bcryptjs": "^2.3.0"
   },
@@ -10,10 +10,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Stiudeo/Thorin-plugin-auth-password"
+    "url": "https://github.com/Thorinjs/Thorin-plugin-auth-password"
   },
   "homepage": "http://thorinjs.com",
   "bugs": {
-    "url": "https://github.com/Stiudeo/Thorin-plugin-auth-password/issues"
+    "url": "https://github.com/Thorinjs/Thorin-plugin-auth-password/issues"
   }
 }
