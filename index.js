@@ -9,11 +9,11 @@ const initModels = require('./lib/initModels'),
  * add --setup=plugin.auth-password
  *
  * The plugin will:
- *  1. Register the "auth.password.login" authorization in the dispatcher,
+ *  1. Register the "auth#password.login" authorization in the dispatcher,
  *    so it can be used in other places. This authorization middleware will
  *    place the opt.modelName (eg: account) in the intent, using the .data(modelName, accObj)
  *    and call the next function that is in line.
- *  2. Register the "auth.password.change" authorization in the dispatcher,
+ *  2. Register the "auth#password.change" authorization in the dispatcher,
  *    so it can be used to enable password changing.
  */
 const IDENTITY_TYPES = ['id', 'username', 'email'];
