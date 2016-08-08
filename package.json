@@ -3,7 +3,7 @@
   "author": "Stiudeo",
   "version": "1.0.17",
   "dependencies": {
-    "bcryptjs": "^2.3.0"
+    "bcryptjs": "2.3.0"
   },
   "description": "Thorin.js Password authentication",
   "main": "index.js",
